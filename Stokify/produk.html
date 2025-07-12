@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Produk - Stokify</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="navbar">
+    <a href="#">Home</a>
+    <a onclick="logout()">Logout</a>
+  </div>
+  <h2>Daftar Produk</h2>
+  <div class="produk-list" id="produkList"></div>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+    const supabase = createClient('https://tfvzsriecpzvrnzlvwww.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmdnpzcmllY3B6dnJuemx2d3d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk1NTc5NzMsImV4cCI6MjA2NTEzMzk3M30.z1OHvDg0kkgyzmaW_BIho4tTHCXfFXSSH-KjYrPosOg');
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (!user) location.href = 'index.html';
+
+    const list = document.getElementById('produkList');
+    const { data } = await supabase.from('produk').select('*').order('id');
+    data.forEach(p => {
+      list.innerHTML += `
+        <div class="produk-item">
+          <img src="${p.gambar}" />
+          <h3>${p.judul}</h3>
+          <p>${p.isi}</p>
+          <button onclick="beli(${p.id}, '${p.judul}', '${p.gambar}', ${p.harga})">Beli</button>
+        </div>
+      `;
+    });
+    window.beli = (id, judul, gambar, harga) => {
+      localStorage.setItem('produk', JSON.stringify({ id, judul, gambar, harga }));
+      location.href = 'checkout.html';
+    }
+    window.logout = () => { localStorage.clear(); location.href = 'index.html'; }
+  </script>
+</body>
+</html>
