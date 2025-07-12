@@ -4,33 +4,35 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin - Stokify</title>
-  <link rel="stylesheet" href="style.css">
-  <style>
-    body { font-family: Arial, sans-serif; margin: 20px; }
-    table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-    th, td { padding: 10px; border: 1px solid #ccc; }
-    input, textarea { width: 100%; margin-top: 10px; }
-    button { margin-top: 10px; }
-  </style>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <h2>Dashboard Admin - Kelola Produk</h2>
   <button onclick="logout()">Logout</button>
+
   <table>
-    <thead><tr><th>ID</th><th>Judul</th><th>Isi</th></tr></thead>
+    <thead>
+      <tr><th>ID</th><th>Judul</th><th>Isi</th><th>Gambar</th></tr>
+    </thead>
     <tbody id="dataBody"></tbody>
   </table>
+
   <form id="productForm">
     <input type="hidden" id="productId">
     <input type="text" id="judul" placeholder="Judul" required>
     <textarea id="isi" placeholder="Deskripsi" required></textarea>
+    <input type="text" id="gambar" placeholder="Link Gambar (opsional)">
     <button type="submit">Simpan</button>
     <button type="button" onclick="resetForm()">Reset</button>
   </form>
 
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-    const supabase = createClient('https://tfvzsriecpzvrnzlvwww.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmdnpzcmllY3B6dnJuemx2d3d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk1NTc5NzMsImV4cCI6MjA2NTEzMzk3M30.z1OHvDg0kkgyzmaW_BIho4tTHCXfFXSSH-KjYrPosOg');
+
+    const supabase = createClient(
+      'https://tfvzsriecpzvrnzlvwww.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmdnpzcmllY3B6dnJuemx2d3d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk1NTc5NzMsImV4cCI6MjA2NTEzMzk3M30.z1OHvDg0kkgyzmaW_BIho4tTHCXfFXSSH-KjYrPosOg'
+    );
 
     const user = JSON.parse(localStorage.getItem('user'));
     if (!user || user.role !== 'admin') {
@@ -46,11 +48,14 @@
       const id = document.getElementById('productId').value;
       const judul = document.getElementById('judul').value;
       const isi = document.getElementById('isi').value;
+      const gambar = document.getElementById('gambar').value;
+
       if (id) {
-        await supabase.from('produk').update({ judul, isi }).eq('id', id);
+        await supabase.from('produk').update({ judul, isi, gambar }).eq('id', id);
       } else {
-        await supabase.from('produk').insert([{ judul, isi }]);
+        await supabase.from('produk').insert([{ judul, isi, gambar }]);
       }
+
       form.reset();
       loadData();
     });
@@ -60,17 +65,32 @@
       dataBody.innerHTML = '';
       data.forEach(item => {
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${item.id}</td><td>${item.judul}</td><td>${item.isi}</td>`;
+        tr.innerHTML = `
+          <td>${item.id}</td>
+          <td>${item.judul}</td>
+          <td>${item.isi}</td>
+          <td><img src="${item.gambar || 'https://via.placeholder.com/60'}" width="60" height="40"></td>
+        `;
         tr.addEventListener('click', () => {
           document.getElementById('productId').value = item.id;
           document.getElementById('judul').value = item.judul;
           document.getElementById('isi').value = item.isi;
+          document.getElementById('gambar').value = item.gambar;
         });
         dataBody.appendChild(tr);
       });
     }
-    function resetForm() { form.reset(); document.getElementById('productId').value = ''; }
-    window.logout = () => { localStorage.removeItem('user'); window.location.href = 'login.html'; }
+
+    function resetForm() {
+      form.reset();
+      document.getElementById('productId').value = '';
+    }
+
+    window.logout = () => {
+      localStorage.removeItem('user');
+      window.location.href = 'login.html';
+    }
+
     loadData();
   </script>
 </body>
