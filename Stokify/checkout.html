@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Pembayaran</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h2>Checkout</h2>
+  <div id="detail"></div>
+  <form id="formBayar">
+    <label>Pilih Pembayaran:</label><br>
+    <select id="metode">
+      <option value="cash">Cash</option>
+      <option value="qris">QRIS</option>
+    </select>
+    <br><br>
+    <button type="submit">Bayar Sekarang</button>
+  </form>
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+    const supabase = createClient('https://YOUR_PROJECT.supabase.co', 'YOUR_PUBLIC_ANON_KEY');
+
+    const user = JSON.parse(localStorage.getItem('user'));
+    const produk = JSON.parse(localStorage.getItem('produk'));
+    if (!user || !produk) location.href = 'index.html';
+
+    document.getElementById('detail').innerHTML = `
+      <p><strong>${produk.judul}</strong></p>
+      <img src="${produk.gambar}" width="200" />
+      <p>Harga: Rp ${produk.harga}</p>
+    `;
+
+    document.getElementById('formBayar').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const metode = document.getElementById('metode').value;
+      await supabase.from('pesanan').insert([{ user_id: user.id, produk_id: produk.id, metode_pembayaran: metode }]);
+      localStorage.setItem('metode', metode);
+      location.href = 'receipt.html';
+    });
+  </script>
+</body>
+</html>
