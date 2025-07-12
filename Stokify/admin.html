@@ -1,43 +1,38 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
   <title>Admin - Stokify</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h2>Dashboard Admin - Kelola Produk</h2>
-  <button onclick="logout()">Logout</button>
-
+  <div class="navbar">
+    <a href="produk.html">Produk</a>
+    <a onclick="logout()">Logout</a>
+  </div>
+  <h2>Kelola Produk</h2>
   <table>
-    <thead>
-      <tr><th>ID</th><th>Judul</th><th>Isi</th><th>Gambar</th></tr>
-    </thead>
+    <thead><tr><th>ID</th><th>Judul</th><th>Isi</th></tr></thead>
     <tbody id="dataBody"></tbody>
   </table>
-
   <form id="productForm">
     <input type="hidden" id="productId">
     <input type="text" id="judul" placeholder="Judul" required>
     <textarea id="isi" placeholder="Deskripsi" required></textarea>
-    <input type="text" id="gambar" placeholder="Link Gambar (opsional)">
+    <input type="text" id="gambar" placeholder="URL Gambar" required>
+    <input type="number" id="harga" placeholder="Harga" required>
     <button type="submit">Simpan</button>
     <button type="button" onclick="resetForm()">Reset</button>
   </form>
 
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-
-    const supabase = createClient(
-      'https://tfvzsriecpzvrnzlvwww.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmdnpzcmllY3B6dnJuemx2d3d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk1NTc5NzMsImV4cCI6MjA2NTEzMzk3M30.z1OHvDg0kkgyzmaW_BIho4tTHCXfFXSSH-KjYrPosOg'
-    );
+    const supabase = createClient('https://tfvzsriecpzvrnzlvwww.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmdnpzcmllY3B6dnJuemx2d3d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk1NTc5NzMsImV4cCI6MjA2NTEzMzk3M30.z1OHvDg0kkgyzmaW_BIho4tTHCXfFXSSH-KjYrPosOg');
 
     const user = JSON.parse(localStorage.getItem('user'));
     if (!user || user.role !== 'admin') {
       alert('Akses hanya untuk admin');
-      window.location.href = 'login.html';
+      location.href = 'index.html';
     }
 
     const form = document.getElementById('productForm');
@@ -49,13 +44,12 @@
       const judul = document.getElementById('judul').value;
       const isi = document.getElementById('isi').value;
       const gambar = document.getElementById('gambar').value;
-
+      const harga = parseInt(document.getElementById('harga').value);
       if (id) {
-        await supabase.from('produk').update({ judul, isi, gambar }).eq('id', id);
+        await supabase.from('produk').update({ judul, isi, gambar, harga }).eq('id', id);
       } else {
-        await supabase.from('produk').insert([{ judul, isi, gambar }]);
+        await supabase.from('produk').insert([{ judul, isi, gambar, harga }]);
       }
-
       form.reset();
       loadData();
     });
@@ -65,17 +59,13 @@
       dataBody.innerHTML = '';
       data.forEach(item => {
         const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${item.id}</td>
-          <td>${item.judul}</td>
-          <td>${item.isi}</td>
-          <td><img src="${item.gambar || 'https://via.placeholder.com/60'}" width="60" height="40"></td>
-        `;
+        tr.innerHTML = `<td>${item.id}</td><td>${item.judul}</td><td>${item.isi}</td>`;
         tr.addEventListener('click', () => {
           document.getElementById('productId').value = item.id;
           document.getElementById('judul').value = item.judul;
           document.getElementById('isi').value = item.isi;
           document.getElementById('gambar').value = item.gambar;
+          document.getElementById('harga').value = item.harga;
         });
         dataBody.appendChild(tr);
       });
@@ -87,8 +77,8 @@
     }
 
     window.logout = () => {
-      localStorage.removeItem('user');
-      window.location.href = 'login.html';
+      localStorage.clear();
+      location.href = 'index.html';
     }
 
     loadData();
