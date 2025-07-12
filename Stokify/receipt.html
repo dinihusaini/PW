@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Struk Pembayaran</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h2>Struk Pembayaran</h2>
+  <div id="struk"></div>
+  <button onclick="window.location.href='produk.html'">Kembali</button>
+  <script>
+    const produk = JSON.parse(localStorage.getItem('produk'));
+    const metode = localStorage.getItem('metode');
+    const waktu = new Date().toLocaleString('id-ID');
+
+    document.getElementById('struk').innerHTML = `
+      <p><strong>Produk:</strong> ${produk.judul}</p>
+      <img src="${produk.gambar}" width="200" />
+      <p><strong>Harga:</strong> Rp ${produk.harga}</p>
+      <p><strong>Pembayaran:</strong> ${metode.toUpperCase()}</p>
+      <p><strong>Waktu:</strong> ${waktu}</p>
+    `;
+  </script>
+</body>
+</html>
