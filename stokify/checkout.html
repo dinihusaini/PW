@@ -56,12 +56,23 @@
       checkoutList.innerHTML = listHTML
     }
 
-    payBtn.addEventListener('click', () => {
-      const metode = document.querySelector('input[name="payment"]:checked').value
-      localStorage.setItem('paymentMethod', metode)
-      localStorage.setItem('detailTransaksi', JSON.stringify(detailProduk))
-      window.location.href = 'receipt.html'
+    payBtn.addEventListener('click', async () => {
+  const metode = document.querySelector('input[name="payment"]:checked').value
+  const detail = Object.values(detailProduk)
+
+  for (const item of detail) {
+    await supabase.from('transaksi').insert({
+      produk_id: item.id,
+      jumlah: item.qty,
+      total_harga: item.qty * item.harga,
+      metode: metode
     })
+  }
+
+  localStorage.setItem('paymentMethod', metode)
+  localStorage.setItem('detailTransaksi', JSON.stringify(detailProduk))
+  window.location.href = 'receipt.html'
+})
 
     const user = localStorage.getItem('user')
     if (!user) window.location.href = 'login.html'
