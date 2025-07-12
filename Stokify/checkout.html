@@ -1,58 +1,187 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <title>Checkout</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Checkout - Stokify</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    #cartTable {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    #cartTable th, #cartTable td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: center;
+    }
+    #cartTable th {
+      background-color: #f2f2f2;
+    }
+    #paymentSection {
+      margin-top: 20px;
+    }
+    #qrisCode {
+      margin-top: 15px;
+      max-width: 200px;
+      display: none;
+    }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Checkout</h2>
-    <div id="detail"></div>
-    <form id="formBayar">
-      <label>Pilih Pembayaran:</label><br>
-      <select id="metode">
-        <option value="cash">Cash</option>
-        <option value="qris">QRIS</option>
-      </select>
+  <h2>Checkout</h2>
+  <div id="cartContainer"></div>
 
-      <div id="qrisBox" style="display:none; margin-top:10px;">
-        <img src="img/qris.png" alt="QRIS" style="width:200px;">
-        <small>Scan untuk simulasi pembayaran</small>
-      </div>
+  <div id="paymentSection" style="display:none;">
+    <h3>Metode Pembayaran</h3>
+    <label>
+      <input type="radio" name="paymentMethod" value="cash" checked /> Cash
+    </label>
+    <label>
+      <input type="radio" name="paymentMethod" value="qris" /> QRIS
+    </label>
 
-      <br><br>
-      <button type="submit">Bayar Sekarang</button>
-    </form>
+    <div id="qrisCode">
+      <p>Scan QRIS berikut untuk membayar:</p>
+      <img src="" alt="QRIS Code" />
+    </div>
+
+    <button id="payBtn">Bayar</button>
   </div>
 
+  <p><a href="produk.html">Kembali ke Produk</a></p>
+
   <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-    const supabase = createClient('https://tfvzsriecpzvrnzlvwww.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmdnpzcmllY3B6dnJuemx2d3d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk1NTc5NzMsImV4cCI6MjA2NTEzMzk3M30.z1OHvDg0kkgyzmaW_BIho4tTHCXfFXSSH-KjYrPosOg');
+    import QRCode from 'https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js';
 
-    const user = JSON.parse(localStorage.getItem('user'));
-    const produk = JSON.parse(localStorage.getItem('produk'));
-    if (!user || !produk) location.href = 'index.html';
+    // Ambil data keranjang dari localStorage
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-    document.getElementById('detail').innerHTML = `
-      <p><strong>${produk.judul}</strong></p>
-      <img src="${produk.gambar}" width="200" />
-      <p>Harga: Rp ${produk.harga}</p>
-    `;
+    const cartContainer = document.getElementById('cartContainer');
+    const paymentSection = document.getElementById('paymentSection');
+    const qrisCodeDiv = document.getElementById('qrisCode');
+    const qrisImg = qrisCodeDiv.querySelector('img');
+    const payBtn = document.getElementById('payBtn');
 
-    const metodeSelect = document.getElementById('metode');
-    const qrisBox = document.getElementById('qrisBox');
-    metodeSelect.addEventListener('change', () => {
-      qrisBox.style.display = metodeSelect.value === 'qris' ? 'block' : 'none';
+    function renderCart() {
+      if (cart.length === 0) {
+        cartContainer.innerHTML = '<p>Keranjang kosong.</p>';
+        paymentSection.style.display = 'none';
+        return;
+      }
+
+      let html = `
+        <table id="cartTable">
+          <thead>
+            <tr>
+              <th>Nama Produk</th>
+              <th>Harga</th>
+              <th>Jumlah</th>
+              <th>Subtotal</th>
+              <th>Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      let total = 0;
+      cart.forEach((item, i) => {
+        const subtotal = item.price * item.qty;
+        total += subtotal;
+        html += `
+          <tr>
+            <td>${item.name}</td>
+            <td>Rp${item.price.toLocaleString()}</td>
+            <td>
+              <input type="number" min="1" value="${item.qty}" data-index="${i}" class="qtyInput" />
+            </td>
+            <td>Rp${subtotal.toLocaleString()}</td>
+            <td><button data-index="${i}" class="removeBtn">Hapus</button></td>
+          </tr>
+        `;
+      });
+
+      html += `
+          </tbody>
+          <tfoot>
+            <tr>
+              <th colspan="3">Total</th>
+              <th colspan="2">Rp${total.toLocaleString()}</th>
+            </tr>
+          </tfoot>
+        </table>
+      `;
+
+      cartContainer.innerHTML = html;
+      paymentSection.style.display = 'block';
+    }
+
+    // Update qty di cart saat input diubah
+    cartContainer.addEventListener('input', (e) => {
+      if (e.target.classList.contains('qtyInput')) {
+        const index = e.target.dataset.index;
+        let val = parseInt(e.target.value);
+        if (val < 1) val = 1;
+        cart[index].qty = val;
+        localStorage.setItem('cart', JSON.stringify(cart));
+        renderCart();
+      }
     });
 
-    document.getElementById('formBayar').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const metode = metodeSelect.value;
-      await supabase.from('pesanan').insert([{ user_id: user.id, produk_id: produk.id, metode_pembayaran: metode }]);
-      localStorage.setItem('metode', metode);
-      location.href = 'receipt.html';
+    // Hapus item dari cart
+    cartContainer.addEventListener('click', (e) => {
+      if (e.target.classList.contains('removeBtn')) {
+        const index = e.target.dataset.index;
+        cart.splice(index, 1);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        renderCart();
+      }
     });
+
+    // Tampilkan QRIS jika metode pembayaran QRIS dipilih
+    paymentSection.addEventListener('change', (e) => {
+      if (e.target.name === 'paymentMethod') {
+        if (e.target.value === 'qris') {
+          // Generate QR code (simulasi)
+          const paymentData = 'https://example.com/payment?amount=' + getTotal();
+          QRCode.toDataURL(paymentData)
+            .then(url => {
+              qrisImg.src = url;
+              qrisCodeDiv.style.display = 'block';
+            })
+            .catch(err => {
+              qrisCodeDiv.style.display = 'none';
+            });
+        } else {
+          qrisCodeDiv.style.display = 'none';
+        }
+      }
+    });
+
+    // Fungsi hitung total
+    function getTotal() {
+      return cart.reduce((sum, item) => sum + item.price * item.qty, 0);
+    }
+
+    // Proses pembayaran
+    payBtn.addEventListener('click', () => {
+      const selectedMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+      if (cart.length === 0) {
+        alert('Keranjang kosong.');
+        return;
+      }
+
+      if (selectedMethod === 'cash') {
+        alert('Pembayaran tunai berhasil! Terima kasih.');
+      } else {
+        alert('Pembayaran via QRIS berhasil! Terima kasih.');
+      }
+      // Bersihkan keranjang
+      localStorage.removeItem('cart');
+      location.href = 'produk.html';
+    });
+
+    renderCart();
   </script>
 </body>
 </html>
