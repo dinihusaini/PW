@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Struk Pembelian</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <h2>Struk Pembelian</h2>
+  <div id="receipt"></div>
+  <button onclick="window.print()">Cetak PDF</button>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <script src="supabase.js"></script>
+  <script>
+    const cart = JSON.parse(localStorage.getItem('cart'));
+    const method = localStorage.getItem('payment_method');
+    const receipt = document.getElementById('receipt');
+
+    async function showReceipt() {
+      let html = '<ul>';
+      let total = 0;
+      for (let item of cart) {
+        const { data } = await supabase.from('books').select('*').eq('id', item.id);
+        const book = data[0];
+        const subtotal = (book.price || 10000) * item.qty;
+        total += subtotal;
+        html += `<li>\${book.title} x \${item.qty} = Rp\${subtotal}</li>`;
+      }
+      html += '</ul>';
+      html += `<p>Metode: \${method}</p>`;
+      html += `<p>Total: Rp\${total}</p>`;
+      if (method === 'qris') {
+        html += `<img src="assets/img/qr.png" width="200" alt="QRIS" />`;
+      }
+      receipt.innerHTML = html;
+    }
+
+    showReceipt();
+  </script>
+</body>
+</html>

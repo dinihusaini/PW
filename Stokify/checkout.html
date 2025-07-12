@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Checkout</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <h2>Metode Pembayaran</h2>
+  <select id="payment-method">
+    <option value="cash">Cash</option>
+    <option value="qris">QRIS</option>
+  </select>
+  <button onclick="processPayment()">Bayar</button>
+
+  <script>
+    function processPayment() {
+      const cart = JSON.parse(localStorage.getItem('cart'));
+      const method = document.getElementById('payment-method').value;
+      localStorage.setItem('payment_method', method);
+      window.location.href = 'receipt.html';
+    }
+  </script>
+</body>
+</html>
