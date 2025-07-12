@@ -2,28 +2,30 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8">
-  <title>Pembayaran</title>
+  <title>Checkout</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h2>Checkout</h2>
-  <div id="detail"></div>
-  <form id="formBayar">
-  <label>Pilih Pembayaran:</label><br>
-  <select id="metode">
-    <option value="cash">Cash</option>
-    <option value="qris">QRIS</option>
-  </select>
+  <div class="container">
+    <h2>Checkout</h2>
+    <div id="detail"></div>
+    <form id="formBayar">
+      <label>Pilih Pembayaran:</label><br>
+      <select id="metode">
+        <option value="cash">Cash</option>
+        <option value="qris">QRIS</option>
+      </select>
 
-  <!-- QRIS Box muncul kalau dipilih -->
-  <div id="qrisBox" style="display: none; margin-top: 10px;">
-    <img src="img/qris.png" alt="QRIS" style="width: 200px;">
-    <small>Scan QR untuk simulasi pembayaran</small>
+      <div id="qrisBox" style="display:none; margin-top:10px;">
+        <img src="img/qris.png" alt="QRIS" style="width:200px;">
+        <small>Scan untuk simulasi pembayaran</small>
+      </div>
+
+      <br><br>
+      <button type="submit">Bayar Sekarang</button>
+    </form>
   </div>
 
-  <br><br>
-  <button type="submit">Bayar Sekarang</button>
-</form>
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
     const supabase = createClient('https://tfvzsriecpzvrnzlvwww.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmdnpzcmllY3B6dnJuemx2d3d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk1NTc5NzMsImV4cCI6MjA2NTEzMzk3M30.z1OHvDg0kkgyzmaW_BIho4tTHCXfFXSSH-KjYrPosOg');
@@ -39,14 +41,14 @@
     `;
 
     const metodeSelect = document.getElementById('metode');
-  const qrisBox = document.getElementById('qrisBox');
-  metodeSelect.addEventListener('change', () => {
-    qrisBox.style.display = metodeSelect.value === 'qris' ? 'block' : 'none';
-  });
-    
+    const qrisBox = document.getElementById('qrisBox');
+    metodeSelect.addEventListener('change', () => {
+      qrisBox.style.display = metodeSelect.value === 'qris' ? 'block' : 'none';
+    });
+
     document.getElementById('formBayar').addEventListener('submit', async (e) => {
       e.preventDefault();
-      const metode = document.getElementById('metode').value;
+      const metode = metodeSelect.value;
       await supabase.from('pesanan').insert([{ user_id: user.id, produk_id: produk.id, metode_pembayaran: metode }]);
       localStorage.setItem('metode', metode);
       location.href = 'receipt.html';
