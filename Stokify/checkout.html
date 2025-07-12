@@ -54,7 +54,6 @@
   <script type="module">
     import QRCode from 'https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js';
 
-    // Ambil data keranjang dari localStorage
     let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
     const cartContainer = document.getElementById('cartContainer');
@@ -116,7 +115,6 @@
       paymentSection.style.display = 'block';
     }
 
-    // Update qty di cart saat input diubah
     cartContainer.addEventListener('input', (e) => {
       if (e.target.classList.contains('qtyInput')) {
         const index = e.target.dataset.index;
@@ -128,7 +126,6 @@
       }
     });
 
-    // Hapus item dari cart
     cartContainer.addEventListener('click', (e) => {
       if (e.target.classList.contains('removeBtn')) {
         const index = e.target.dataset.index;
@@ -138,11 +135,9 @@
       }
     });
 
-    // Tampilkan QRIS jika metode pembayaran QRIS dipilih
     paymentSection.addEventListener('change', (e) => {
       if (e.target.name === 'paymentMethod') {
         if (e.target.value === 'qris') {
-          // Generate QR code (simulasi)
           const paymentData = 'https://example.com/payment?amount=' + getTotal();
           QRCode.toDataURL(paymentData)
             .then(url => {
@@ -158,12 +153,10 @@
       }
     });
 
-    // Fungsi hitung total
     function getTotal() {
       return cart.reduce((sum, item) => sum + item.price * item.qty, 0);
     }
 
-    // Proses pembayaran
     payBtn.addEventListener('click', () => {
       const selectedMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
       if (cart.length === 0) {
@@ -171,14 +164,20 @@
         return;
       }
 
+      const transaction = {
+        items: cart,
+        method: selectedMethod
+      };
+      sessionStorage.setItem('transaction', JSON.stringify(transaction));
+
       if (selectedMethod === 'cash') {
         alert('Pembayaran tunai berhasil! Terima kasih.');
       } else {
         alert('Pembayaran via QRIS berhasil! Terima kasih.');
       }
-      // Bersihkan keranjang
+
       localStorage.removeItem('cart');
-      location.href = 'produk.html';
+      location.href = 'receipt.html';
     });
 
     renderCart();
