@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Register - Stokify</title>
+</head>
+<body>
+  <h2>Register Akun</h2>
+  <form id="registerForm">
+    <input type="text" id="username" placeholder="Username" required><br>
+    <input type="password" id="password" placeholder="Password" required><br>
+    <select id="role">
+      <option value="pengunjung">Pengunjung</option>
+      <option value="admin">Admin</option>
+    </select><br>
+    <button type="submit">Register</button>
+  </form>
+  <p>Sudah punya akun? <a href="login.html">Login</a></p>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+    const supabase = createClient('https://tfvzsriecpzvrnzlvwww.supabase.co', 'YOUR_PUBLIC_ANON_KEY');
+
+    const form = document.getElementById('registerForm');
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const role = document.getElementById('role').value;
+
+      const { error } = await supabase.from('users').insert([{ username, password, role }]);
+      if (error) return alert('Register gagal: ' + error.message);
+      alert('Register berhasil! Silakan login.');
+      window.location.href = 'login.html';
+    });
+  </script>
+</body>
+</html>
