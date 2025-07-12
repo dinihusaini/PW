@@ -6,19 +6,18 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="register-container">
-    <h2>Daftar Pengguna Baru</h2>
+  <div class="container">
+    <h2>Daftar Akun</h2>
     <form id="registerForm">
-      <input type="text" id="username" placeholder="Username" required />
-      <input type="password" id="password" placeholder="Password" required />
+      <input type="text" id="username" placeholder="Username" required>
+      <input type="password" id="password" placeholder="Password" required>
       <select id="role">
         <option value="pengunjung">Pengunjung</option>
         <option value="admin">Admin</option>
       </select>
-      <button type="submit">Register</button>
+      <button type="submit">Daftar</button>
     </form>
   </div>
-
   <script type="module">
     import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
     const supabase = createClient('https://tfvzsriecpzvrnzlvwww.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmdnpzcmllY3B6dnJuemx2d3d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk1NTc5NzMsImV4cCI6MjA2NTEzMzk3M30.z1OHvDg0kkgyzmaW_BIho4tTHCXfFXSSH-KjYrPosOg');
@@ -28,10 +27,10 @@
       const username = document.getElementById('username').value;
       const password = document.getElementById('password').value;
       const role = document.getElementById('role').value;
+
       const { error } = await supabase.from('users').insert([{ username, password, role }]);
-      if (error) return alert('Gagal mendaftar: ' + error.message);
-      alert('Registrasi berhasil!');
-      location.href = 'index.html';
+      if (!error) window.location.href = 'index.html';
+      else alert('Gagal mendaftar: ' + error.message);
     });
   </script>
 </body>
