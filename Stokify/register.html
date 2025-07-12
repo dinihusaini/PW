@@ -1,31 +1,44 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Register - Stokify</title>
+  <title>Daftar - Stokify</title>
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
   <div class="container">
-    <h2>Register</h2>
+    <h2>Daftar Akun</h2>
     <form id="register-form">
       <input type="email" id="email" placeholder="Email" required><br>
       <input type="password" id="password" placeholder="Password" required><br>
-      <button type="submit">Register</button>
+      <button type="submit">Daftar</button>
     </form>
-    <p>Sudah punya akun? <a href="index.html">Login</a></p>
+    <p>Sudah punya akun? <a href="login.html">Login</a></p>
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-  <script src="supabase.js"></script>
-  <script>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+    const supabase = createClient(
+      'https://tfvzsriecpzvrnzlvwww.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmdnpzcmllY3B6dnJuemx2d3d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk1NTc5NzMsImV4cCI6MjA2NTEzMzk3M30.z1OHvDg0kkgyzmaW_BIho4tTHCXfFXSSH-KjYrPosOg'
+    );
+
     document.getElementById('register-form').addEventListener('submit', async (e) => {
       e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
       const { data, error } = await supabase.auth.signUp({
-        email: email.value,
-        password: password.value
+        email,
+        password
       });
-      if (error) return alert('Registrasi gagal');
-      alert('Registrasi berhasil, silakan login');
-      window.location.href = 'index.html';
+
+      if (error) {
+        alert('Gagal daftar: ' + error.message);
+      } else {
+        alert('Akun berhasil dibuat. Silakan login.');
+        window.location.href = 'login.html';
+      }
     });
   </script>
 </body>
