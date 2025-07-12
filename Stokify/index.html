@@ -2,50 +2,45 @@
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Login - Stokify</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h2>Login ke Stokify</h2>
-  <form id="loginForm">
-    <input type="text" id="username" placeholder="Username" required />
-    <input type="password" id="password" placeholder="Password" required />
-    <button type="submit">Login</button>
-    <p>Belum punya akun? <a href="register.html">Register di sini</a></p>
-  </form>
+  <div class="login-container">
+    <h2>Login Stokify</h2>
+    <form id="loginForm" style="max-width:300px; display:flex; flex-direction:column; gap:10px;">
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button type="submit">Login</button>
+    </form>
+    <p>Belum punya akun? <a href="register.html">Daftar di sini</a></p>
+  </div>
 
   <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-    const supabase = createClient(
-      'https://tfvzsriecpzvrnzlvwww.supabase.co',
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmdnpzcmllY3B6dnJuemx2d3d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk1NTc5NzMsImV4cCI6MjA2NTEzMzk3M30.z1OHvDg0kkgyzmaW_BIho4tTHCXfFXSSH-KjYrPosOg'
-    );
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
-    document.getElementById('loginForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const username = document.getElementById('username').value;
-      const password = document.getElementById('password').value;
+    const SUPABASE_URL = 'https://tfvzsriecpzvrnzlvwww.supabase.co'
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmdnpzcmllY3B6dnJuemx2d3d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk1NTc5NzMsImV4cCI6MjA2NTEzMzk3M30.z1OHvDg0kkgyzmaW_BIho4tTHCXfFXSSH-KjYrPosOg'
 
-      const { data, error } = await supabase
-        .from('users')
-        .select('*')
-        .eq('username', username)
-        .eq('password', password)
-        .single();
+    const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-      if (error || !data) {
-        alert('Login gagal! Periksa kembali username dan password.');
-        return;
-      }
+    const loginForm = document.getElementById('loginForm')
 
-      localStorage.setItem('user', JSON.stringify(data));
-      if (data.role === 'admin') {
-        location.href = 'admin.html';
+    loginForm.addEventListener('submit', async (e) => {
+      e.preventDefault()
+      const email = document.getElementById('email').value
+      const password = document.getElementById('password').value
+
+      const { user, error } = await supabase.auth.signIn({ email, password })
+
+      if (error) {
+        alert('Login gagal: ' + error.message)
       } else {
-        location.href = 'produk.html';
+        // Login sukses, redirect ke produk.html
+        location.href = 'produk.html'
       }
-    });
+    })
   </script>
 </body>
 </html>
