@@ -14,6 +14,11 @@
     #addBtn { margin-bottom: 15px; }
   </style>
 </head>
+<script>
+  if (!localStorage.getItem('user')) {
+    window.location.href = 'login.html'
+  }
+</script>
 <body>
   <div class="profile-container">
     <div class="header-text">
