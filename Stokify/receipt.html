@@ -1,70 +1,34 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <title>Struk Pembelian</title>
-  <link rel="stylesheet" href="style.css" />
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <meta charset="UTF-8">
+  <title>Struk Pembayaran</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h2>Struk Pembelian</h2>
-  <div id="struk" class="struk-box">
-    <p><strong>Pembeli:</strong> <span id="username"></span></p>
-    <p><strong>Produk:</strong> <span id="produk"></span></p>
-    <img id="gambarProduk" src="" width="150" />
-    <p><strong>Harga:</strong> <span id="harga"></span></p>
-    <p><strong>Pembayaran:</strong> <span id="metode"></span></p>
-
-    <div id="qrStruk" style="margin-top: 10px; display:none;">
-      <img src="img/qris.png" width="150" />
-      <p><small>QRIS Simulasi</small></p>
-    </div>
+  <div class="receipt">
+    <h2>Struk Pembayaran</h2>
+    <div id="struk"></div>
+    <button onclick="window.print()">Cetak PDF</button>
   </div>
-  <br>
-  <button onclick="downloadStruk()">Download PDF</button>
-  <button onclick="window.location.href='produk.html'">Kembali ke Produk</button>
 
-  <script>
+  <script type="module">
     const user = JSON.parse(localStorage.getItem('user'));
     const produk = JSON.parse(localStorage.getItem('produk'));
     const metode = localStorage.getItem('metode');
-
     if (!user || !produk || !metode) location.href = 'index.html';
 
-    document.getElementById('username').textContent = user.username;
-    document.getElementById('produk').textContent = produk.judul;
-    document.getElementById('harga').textContent = 'Rp ' + produk.harga;
-    document.getElementById('metode').textContent = metode;
-    document.getElementById('gambarProduk').src = produk.gambar;
+    let html = `
+      <p>Nama: ${user.username}</p>
+      <p>Produk: ${produk.judul}</p>
+      <p>Harga: Rp ${produk.harga}</p>
+      <p>Metode Pembayaran: ${metode}</p>
+    `;
 
     if (metode === 'qris') {
-      document.getElementById('qrStruk').style.display = 'block';
+      html += `<img src="img/qris.png" width="200" alt="QRIS"><br><small>Telah dibayar via QRIS</small>`;
     }
-
-    async function downloadStruk() {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-
-      doc.setFontSize(16);
-      doc.text("Stokify - Struk Pembelian", 20, 20);
-      doc.setFontSize(12);
-      doc.text(`Pembeli: ${user.username}`, 20, 35);
-      doc.text(`Produk: ${produk.judul}`, 20, 45);
-      doc.text(`Harga: Rp ${produk.harga}`, 20, 55);
-      doc.text(`Pembayaran: ${metode}`, 20, 65);
-
-      if (metode === 'qris') {
-        const img = new Image();
-        img.src = "img/qris.png";
-        img.onload = () => {
-          doc.addImage(img, 'PNG', 20, 75, 50, 50);
-          doc.text("QRIS Simulasi", 20, 130);
-          doc.save('struk.pdf');
-        };
-      } else {
-        doc.save('struk.pdf');
-      }
-    }
+    document.getElementById('struk').innerHTML = html;
   </script>
 </body>
 </html>
