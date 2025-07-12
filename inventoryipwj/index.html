@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dini Husaini - Sistem Inventaris</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Tambahan styling sederhana */
+    .content-card {
+      background: #f7f7f7;
+      padding: 15px;
+      margin: 10px 0;
+      border-radius: 6px;
+    }
+    input, button {
+      padding: 8px;
+      margin: 5px 0;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    button {
+      cursor: pointer;
+      background-color: #4caf50;
+      color: white;
+      border: none;
+    }
+    button:hover {
+      background-color: #45a049;
+    }
+  </style>
+</head>
+<body>
+  <div class="profile-container">
+    <div class="header-bg"></div>
+
+    <div class="profile-photo-wrapper">
+      <img src="profile.jpg" alt="profile" class="profile-photo" />
+    </div>
+
+    <div class="header-text">
+      <h1>Dini Husaini</h1>
+      <p class="subtitle">She/Her • Web Developer</p>
+      <p>Bogor, Indonesia • <a href="https://dinihusaini.github.io/PW/web/">https://dinihusaini.github.io/PW/web/</a></p>
+      <p><strong>Dini Florest</strong> — Universitas Ipwija</p>
+    </div>
+
+    <div class="action-buttons">
+      <button>Open to work</button>
+      <button>Add profile section</button>
+      <button>Enhance profile</button>
+    </div>
+
+    <div id="login-container" class="content-card">
+      <h2>Login</h2>
+      <form id="login-form">
+        <input type="email" id="email" placeholder="Email" required />
+        <input type="password" id="password" placeholder="Password" required />
+        <button type="submit">Login</button>
+      </form>
+      <p id="login-error" style="color:red;"></p>
+    </div>
+
+    <div id="admin-menu" style="display:none;">
+      <h2>Inventaris Barang</h2>
+      <button id="logout-btn">Logout</button>
+
+      <form id="product-form" class="content-card">
+        <input type="hidden" id="product-id" />
+        <input type="text" id="product-name" placeholder="Nama Barang" required />
+        <input type="number" id="product-qty" placeholder="Jumlah" required min="0" />
+        <button type="submit">Simpan</button>
+        <button type="button" id="cancel-edit" style="background:#f44336;">Batal</button>
+      </form>
+
+      <div id="product-list"></div>
+    </div>
+
+    <div id="content"  ></div>
+
+    <div class="content-card">
+      <h3>Sosial Media <small></small></h3>
+      <ul>
+        <li><strong>linkedin :</strong> http://linkedin.com/in/dinihsnn </li>
+        <li><strong>instagram :</strong> dinihsnn</li>
+      </ul>
+    </div>
+  </div>
+
+<script type="module">
+// Import Supabase client dari CDN
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+const SUPABASE_URL = 'https://tfvzsriecpzvrnzlvwww.supabase.co'
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmdnpzcmllY3B6dnJuemx2d3d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk1NTc5NzMsImV4cCI6MjA2NTEzMzk3M30.z1OHvDg0kkgyzmaW_BIho4tTHCXfFXSSH-KjYrPosOg'
+
+const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
+
+// DOM Elements
+const loginContainer = document.getElementById('login-container')
+const loginForm = document.getElementById('login-form')
+const loginError = document.getElementById('login-error')
+
+const adminMenu = document.getElementById('admin-menu')
+const logoutBtn = document.getElementById('logout-btn')
+
+const productForm = document.getElementById('product-form')
+const productIdInput = document.getElementById('product-id')
+const productNameInput = document.getElementById('product-name')
+const productQtyInput = document.getElementById('product-qty')
+
+const productList = document.getElementById('product-list')
+
+// Cek sesi user
+async function checkSession() {
+  const user = supabase.auth.user()
+  if (user) {
+    loginContainer.style.display = 'none'
+    adminMenu.style.display = 'block'
+    await loadProducts()
+  } else {
+    loginContainer.style.display = 'block'
+    adminMenu.style.display = 'none'
+  }
+}
+
+// Login handler
+loginForm.addEventListener('submit', async (e) => {
+  e.preventDefault()
+  const email = document.getElementById('email').value
+  const password = document.getElementById('password').value
+
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password })
+  if (error) {
+    loginError.textContent = error.message
+  } else {
+    loginError.textContent = ''
+    await checkSession()
+  }
+})
+
+// Logout handler
+logoutBtn.addEventListener('click', async () => {
+  await supabase.auth.signOut()
+  checkSession()
+})
+
+// Load data produk dari tabel "inventaris"
+async function loadProducts() {
+  const { data, error } = await supabase.from('inventaris').select('*').order('id', {ascending:true})
+  if (error) {
+    alert('Error loading data: ' + error.message)
+    return
+  }
+  productList.innerHTML = ''
+  if (data.length === 0) {
+    productList.innerHTML = '<p>Tidak ada data barang.</p>'
+    return
+  }
+  let out = ''
+  data.forEach(item => {
+    out += `
+      <div class="content-card">
+        <h3>${item.nama}</h3>
+        <p>Jumlah: ${item.jumlah}</p>
+        <button data-id="${item.id}" class="edit-btn">Edit</button>
+        <button data-id="${item.id}" class="delete-btn" style="background:#f44336;">Hapus</button>
+      </div>
+    `
+  })
+  productList.innerHTML = out
+
+  // Pasang event listener edit dan delete
+  document.querySelectorAll('.edit-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const id = e.target.getAttribute('data-id')
+      editProduct(id)
+    })
+  })
+  document.querySelectorAll('.delete-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const id = e.target.getAttribute('data-id')
+      if (confirm('Yakin ingin menghapus barang ini?')) {
+        await deleteProduct(id)
+      }
+    })
+  })
+}
+
+// Edit product: isi form dengan data yang ada
+async function editProduct(id) {
+  const { data, error } = await supabase.from('inventaris').select('*').eq('id', id).single()
+  if (error) {
+    alert('Error fetching data: ' + error.message)
+    return
+  }
+  productIdInput.value = data.id
+  productNameInput.value = data.nama
+  productQtyInput.value = data.jumlah
+}
+
+// Delete product
+async function deleteProduct(id) {
+  const { error } = await supabase.from('inventaris').delete().eq('id', id)
+  if (error) {
+    alert('Error deleting data: ' + error.message)
+    return
+  }
+  alert('Data berhasil dihapus.')
+  loadProducts()
+}
+
+// Submit tambah/edit product
+productForm.addEventListener('submit', async (e) => {
+  e.preventDefault()
+  const id = productIdInput.value
+  const nama = productNameInput.value.trim()
+  const jumlah = parseInt(productQtyInput.value)
+
+  if (!nama || isNaN(jumlah) || jumlah < 0) {
+    alert('Mohon isi data dengan benar.')
+    return
+  }
+
+  if (id) {
+    // update
+    const { error } = await supabase.from('inventaris').update({ nama, jumlah }).eq('id', id)
+    if (error) {
+      alert('Error updating data: ' + error.message)
+      return
+    }
+    alert('Data berhasil diupdate.')
+  } else {
+    // insert
+    const { error } = await supabase.from('inventaris').insert([{ nama, jumlah }])
+    if (error) {
+      alert('Error inserting data: ' + error.message)
+      return
+    }
+    alert('Data berhasil ditambahkan.')
+  }
+
+  productForm.reset()
+  productIdInput.value = ''
+  loadProducts()
+})
+
+// Cancel edit reset form
+document.getElementById('cancel-edit').addEventListener('click', () => {
+  productForm.reset()
+  productIdInput.value = ''
+})
+
+window.addEventListener('DOMContentLoaded', () => {
+  checkSession()
+})
+</script>
+
+</body>
+</html>
