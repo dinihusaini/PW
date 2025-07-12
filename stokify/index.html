@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Katalog Produk - Stokify</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="profile-container">
+    <div class="header-bg"></div>
+    <div class="profile-photo-wrapper">
+      <img src="profile.jpg" alt="profile" class="profile-photo" />
+    </div>
+    <div class="header-text">
+      <h1>Katalog Produk</h1>
+      <p class="subtitle">Selamat datang di Stokify - Katalog Produk Digital</p>
+    </div>
+
+    <div id="content"></div>
+  </div>
+
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+const supabase = createClient('https://tfvzsriecpzvrnzlvwww.supabase.co', '...')
+const content = document.getElementById('content')
+
+async function loadData() {
+  const { data } = await supabase.from('web').select('*').order('id')
+  content.innerHTML = ''
+  data.forEach(row => {
+    content.innerHTML += `
+      <div class="content-card">
+        <h2>${row.nama}</h2>
+        <img src="${row.gambar}" alt="${row.nama}" style="max-width:100%; height:auto; border-radius:8px;">
+        <p><strong>Rp ${row.harga}</strong></p>
+        <p>${row.deskripsi}</p>
+      </div>
+    `
+  })
+}
+
+window.addEventListener('DOMContentLoaded', loadData)
+</script>
+</body>
+</html>
