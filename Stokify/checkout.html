@@ -38,6 +38,12 @@
       <p>Harga: Rp ${produk.harga}</p>
     `;
 
+    const metodeSelect = document.getElementById('metode');
+  const qrisBox = document.getElementById('qrisBox');
+  metodeSelect.addEventListener('change', () => {
+    qrisBox.style.display = metodeSelect.value === 'qris' ? 'block' : 'none';
+  });
+    
     document.getElementById('formBayar').addEventListener('submit', async (e) => {
       e.preventDefault();
       const metode = document.getElementById('metode').value;
