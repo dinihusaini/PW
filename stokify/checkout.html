@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Form Checkout</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f2f2f2;
+      padding: 20px;
+    }
+
+    .checkout-container {
+      max-width: 500px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+    }
+
+    label {
+      margin-top: 15px;
+      display: block;
+      font-weight: bold;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 5px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    input[readonly] {
+      background: #eee;
+    }
+
+    button {
+      margin-top: 20px;
+      width: 100%;
+      padding: 12px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    #qr-container {
+      margin-top: 20px;
+      text-align: center;
+      display: none;
+    }
+
+    #qr-container img {
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="checkout-container">
+  <h2>Checkout Pesanan</h2>
+  <form id="checkout-form">
+    <label for="jumlah-barang">Jumlah Barang:</label>
+    <input type="number" id="jumlah-barang" name="jumlah_barang" value="1" min="1" required>
+
+    <label for="harga-per-item">Harga per Item (Rp):</label>
+    <input type="number" id="harga-per-item" name="harga_per_item" value="0" min="0" required>
+
+    <label for="total-harga">Total Harga (Rp):</label>
+    <input type="number" id="total-harga" name="total_harga" readonly>
+
+    <label for="pembayaran">Metode Pembayaran:</label>
+    <select id="pembayaran" name="pembayaran" required>
+      <option value="">-- Pilih Metode Pembayaran --</option>
+      <option value="cash">Cash</option>
+      <option value="qrcode">QR Code</option>
+    </select>
+
+    <div id="qr-container">
+      <p>Scan QR Code untuk pembayaran:</p>
+      <img id="qr-image" src="image/qr.jpg" alt="QR Code">
+    </div>
+
+    <button type="submit">Bayar Sekarang</button>
+  </form>
+</div>
+
+<script>
+  const jumlahBarang = document.getElementById("jumlah-barang");
+  const hargaPerItem = document.getElementById("harga-per-item");
+  const totalHarga = document.getElementById("total-harga");
+  const pembayaran = document.getElementById("pembayaran");
+  const qrContainer = document.getElementById("qr-container");
+  const qrImage = document.getElementById("qr-image");
+
+  function updateTotal() {
+    const jumlah = parseInt(jumlahBarang.value) || 0;
+    const harga = parseInt(hargaPerItem.value) || 0;
+    const total = jumlah * harga;
+    totalHarga.value = total;
+
+    // Update QR Code jika metode pembayaran QR dipilih
+    if (pembayaran.value === "qrcode" && total > 0) {
+      const data = encodeURIComponent(`Pembayaran sebesar Rp${total}`);
+      const qrUrl = `https://chart.googleapis.com/chart?cht=qr&chs=250x250&chl=${data}`;
+      qrImage.src = qrUrl;
+      qrContainer.style.display = "block";
+    } else {
+      qrContainer.style.display = "none";
+    }
+  }
+
+  jumlahBarang.addEventListener("input", updateTotal);
+  hargaPerItem.addEventListener("input", updateTotal);
+  pembayaran.addEventListener("change", updateTotal);
+
+  // Inisialisasi saat load
+  updateTotal();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Katalog Produk Makanan</title>
+  <link rel="stylesheet" href="katalog.css" />
+</head>
+<body>
+  <header>
+    <h1>Katalog Produk Makanan</h1>
+    <p>Nikmati berbagai pilihan makanan lezat dari kami!</p>
+  </header>
+
+  <main class="produk-container">
+    <div class="produk">
+      <img src="image/nasigoreng.jpg" alt="Nasi Goreng" />
+      <h3>Nasi Goreng Spesial</h3>
+      <p class="harga">Rp15.000</p>
+      <button onclick="tambahKeKeranjang('Nasi Goreng Spesial', 15000)">Add to Order</button>
+    </div>
+    <div class="produk">
+      <img src="image/miegoreng.jpg" alt="Mie Goreng" />
+      <h3>Mie Goreng dengan Kerupuk</h3>
+      <p class="harga">Rp15.000</p>
+      <button onclick="tambahKeKeranjang('Mie Goreng dengan Kerupuk', 15000)">Add to Order</button>
+    </div>
+    <div class="produk">
+      <img src="image/nasiayam.jpg" alt="Ayam Goreng" />
+      <h3>Nasi Ayam Komplit</h3>
+      <p class="harga">Rp20.000</p>
+      <button onclick="tambahKeKeranjang('Nasi Ayam Komplit', 20000)">Add to Order</button>
+    </div>
+    <div class="produk">
+      <img src="image/sb.jpg" alt="Spageti" />
+      <h3>Spaghetti Bolognese</h3>
+      <p class="harga">Rp20.000</p>
+      <button onclick="tambahKeKeranjang('Spaghetti Bolognese', 20000)">Add to Order</button>
+    </div>
+    <div class="produk">
+      <img src="image/f&c.jpg" alt="Fish and Chips" />
+      <h3>Fish and Chips</h3>
+      <p class="harga">Rp15.000</p>
+      <button onclick="tambahKeKeranjang('Fish and Chips', 15000)">Add to Order</button>
+    </div>
+    <div class="produk">
+      <img src="image/NS.jpg" alt="Nasi dengan Semur Daging dan Wortel" />
+      <h3>Nasi dengan Semur Daging dan Wortel</h3>
+      <p class="harga">Rp25.000</p>
+      <button onclick="tambahKeKeranjang('Nasi dengan Semur Daging dan Wortel', 25000)">Add to Order</button>
+    </div>
+    <div class="produk">
+      <img src="image/burger.jpg" alt="Burger Keju dan Sayur" />
+      <h3>Burger Keju dan Sayur</h3>
+      <p class="harga">Rp17.000</p>
+      <button onclick="tambahKeKeranjang('Burger Keju dan Sayur', 17000)">Add to Order</button>
+    </div>
+    <div class="produk">
+      <img src="image/ss.jpg" alt="Sup Sayur" />
+      <h3>Sup Sayur</h3>
+      <p class="harga">Rp7.000</p>
+      <button onclick="tambahKeKeranjang('Sup Sayur', 7000)">Add to Order</button>
+    </div>
+    <div class="produk">
+      <img src="image/nt.jpg" alt="Nasi dengan Ayam Teriyaki" />
+      <h3>Nasi dengan Ayam Teriyakil</h3>
+      <p class="harga">Rp17.000</p>
+      <button onclick="tambahKeKeranjang('Nasi dengan Ayam Teriyaki', 17000)">Add to Order</button>
+    </div>
+    <div class="produk">
+      <img src="image/teh.jpg" alt="Teh" />
+      <h3>Teh</h3>
+      <p class="harga">Rp5.000</p>
+      <button onclick="tambahKeKeranjang('Teh', 5000)">Add to Order</button>
+    </div>
+    <div class="produk">
+      <img src="image/escola.jpg" alt="Es Cola" />
+      <h3>Es Cola</h3>
+      <p class="harga">Rp8.000</p>
+      <button onclick="tambahKeKeranjang('Es Cola', 8000)">Add to Order</button>
+    </div>
+    <div class="produk">
+      <img src="image/jm.jpg" alt="Jus Mangga" />
+      <h3>Jus Mangga</h3>
+      <p class="harga">Rp6.000</p>
+      <button onclick="tambahKeKeranjang('Jus Mangga', 6000)">Add to Order</button>
+    </div>
+  </main>
+
+  <section class="keranjang" id="keranjang">
+    <h2>Keranjang Belanja</h2>
+    <ul id="daftar-keranjang"></ul>
+    <p>Total: Rp <span id="total-harga">0</span></p>
+    <button onclick="tampilkanMetodePembayaran()">Checkout</button>
+  </section>
+
+  <section id="pembayaran" style="display:none">
+    <h2>Pilih Metode Pembayaran</h2>
+    <button onclick="prosesPembayaran('cash')">Bayar di Kasir</button>
+    <button onclick="prosesPembayaran('qr')">Bayar dengan Kode QR</button>
+  </section>
+
+  <section id="struk" style="display:none">
+    <h2>Struk Pembelian</h2>
+    <div id="detail-struk"></div>
+  </section>
+
+  <script>
+    const keranjang = [];
+
+    function tambahKeKeranjang(nama, harga) {
+      const item = keranjang.find(i => i.nama === nama);
+      if (item) {
+        item.jumlah += 1;
+      } else {
+        keranjang.push({ nama, harga, jumlah: 1 });
+      }
+      tampilkanKeranjang();
+    }
+
+    function tampilkanKeranjang() {
+      const daftar = document.getElementById("daftar-keranjang");
+      daftar.innerHTML = "";
+      let total = 0;
+      keranjang.forEach(item => {
+        const li = document.createElement("li");
+        li.textContent = `${item.nama} x${item.jumlah} - Rp ${item.harga * item.jumlah}`;
+        daftar.appendChild(li);
+        total += item.harga * item.jumlah;
+      });
+      document.getElementById("total-harga").textContent = total;
+    }
+
+    function tampilkanMetodePembayaran() {
+      document.getElementById("pembayaran").style.display = "block";
+    }
+
+    function prosesPembayaran(metode) {
+      let struk = "<ul>";
+      let total = 0;
+      keranjang.forEach(item => {
+        struk += `<li>${item.nama} x${item.jumlah} - Rp ${item.harga * item.jumlah}</li>`;
+        total += item.harga * item.jumlah;
+      });
+      struk += `</ul><p><strong>Total: Rp ${total}</strong></p>`;
+
+      if (metode === "cash") {
+        struk += `<p>Pesanan Anda akan di Siapkan!. Silakan bayar ke kasir dengan jumlah di atas.</p>`;
+      } else if (metode === "qr") {
+        struk += `<p>Pesanan Anda akan di Siapkan!. Silakan scan QR Code di bawah ini untuk membayar:</p>`;
+        struk += `<img src='image/qr.jpg' alt='QR Code' style='width:200px'/>`;
+      }
+
+      document.getElementById("detail-struk").innerHTML = struk;
+      document.getElementById("struk").style.display = "block";
+    }
+  </script>
+  <footer>
+    <p>&copy; 2025 Foodie IPWIJA. Created by Sevti and Dwi. All rights reserved.</p>
+  </footer>
+</body>
+</html>
