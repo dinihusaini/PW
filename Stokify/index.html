@@ -1,41 +1,59 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Stokify - Katalog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Stokify - Produk</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h2>Selamat Datang di Stokify</h2>
-  <button onclick="logout()">Logout</button>
+
+  <nav>
+    <a href="index.html">Home</a>
+    <button id="logoutBtn">Logout</button>
+  </nav>
+
+  <h2>Daftar Produk</h2>
+
   <div id="produkList"></div>
 
-  <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-    const supabase = createClient('https://tfvzsriecpzvrnzlvwww.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmdnpzcmllY3B6dnJuemx2d3d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk1NTc5NzMsImV4cCI6MjA2NTEzMzk3M30.z1OHvDg0kkgyzmaW_BIho4tTHCXfFXSSH-KjYrPosOg');
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (!user) {
-      alert('Silakan login terlebih dahulu.');
-      window.location.href = 'login.html';
-    }
+const supabase = createClient(
+  'https://tfvzsriecpzvrnzlvwww.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmdnpzcmllY3B6dnJuemx2d3d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk1NTc5NzMsImV4cCI6MjA2NTEzMzk3M30.z1OHvDg0kkgyzmaW_BIho4tTHCXfFXSSH-KjYrPosOg'
+);
 
-    async function loadProduk() {
-      const { data } = await supabase.from('produk').select('*').order('id');
-      const container = document.getElementById('produkList');
-      data.forEach(p => {
-        const div = document.createElement('div');
-        div.innerHTML = `<h3>${p.judul}</h3><p>${p.isi}</p><hr>`;
-        container.appendChild(div);
-      });
-    }
+const produkList = document.getElementById('produkList');
+const logoutBtn = document.getElementById('logoutBtn');
 
-    window.logout = () => {
-      localStorage.removeItem('user');
-      window.location.href = 'login.html';
-    }
+async function loadProduk() {
+  const { data, error } = await supabase.from('produk').select('*').order('id');
+  if (error) {
+    alert('Gagal memuat produk: ' + error.message);
+    return;
+  }
+  produkList.innerHTML = '';
+  data.forEach(p => {
+    const div = document.createElement('div');
+    div.className = 'produk-item';
+    div.innerHTML = `
+      <img src="${p.gambar || 'https://via.placeholder.com/240x150?text=No+Image'}" alt="${p.judul}" />
+      <h3>${p.judul}</h3>
+      <p>${p.isi}</p>
+    `;
+    produkList.appendChild(div);
+  });
+}
 
-    loadProduk();
-  </script>
+logoutBtn.addEventListener('click', async () => {
+  await supabase.auth.signOut();
+  window.location.href = 'login.html';
+});
+
+window.addEventListener('DOMContentLoaded', loadProduk);
+</script>
+
 </body>
 </html>
