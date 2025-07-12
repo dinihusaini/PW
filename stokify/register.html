@@ -1,39 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Register - Stokify</title>
-  <link rel="stylesheet" href="style.css" />
-  <style>
-    body { text-align: center; padding: 60px; }
-    input, button { margin: 10px; padding: 10px; width: 250px; }
-  </style>
+  <link rel="stylesheet" href="assets/css/style.css">
 </head>
-<body>
-  <h2>Register Admin</h2>
-  <form id="registerForm">
-    <input type="text" id="username" placeholder="Username" required /><br>
-    <input type="password" id="password" placeholder="Password" required /><br>
-    <button type="submit">Register</button>
-  </form>
+<body class="auth">
+  <div class="auth-container">
+    <h2>Register Admin</h2>
+    <form id="registerForm">
+      <input type="text" id="username" placeholder="Username" required>
+      <input type="password" id="password" placeholder="Password" required>
+      <button type="submit">Register</button>
+      <p>Sudah punya akun? <a href="login.html">Login</a></p>
+    </form>
+  </div>
 
-<script type="module">
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
-const supabase = createClient('https://tfvzsriecpzvrnzlvwww.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmdnpzcmllY3B6dnJuemx2d3d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk1NTc5NzMsImV4cCI6MjA2NTEzMzk3M30.z1OHvDg0kkgyzmaW_BIho4tTHCXfFXSSH-KjYrPosOg')
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+    const supabase = createClient('https://fjlcclekszijkddtmcss.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZqbGNjbGVrc3ppamtkZHRtY3NzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIzMzU5MDUsImV4cCI6MjA2NzkxMTkwNX0.m-RASrLz0XDLC_lO-4mVTliEWbMV4gyIimEi30D1RLQ')
 
-document.getElementById('registerForm').addEventListener('submit', async (e) => {
-  e.preventDefault()
-  const user = document.getElementById('username').value.trim()
-  const pass = document.getElementById('password').value.trim()
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault()
+      const user = document.getElementById('username').value.trim()
+      const pass = document.getElementById('password').value.trim()
 
-  const { data, error } = await supabase.from('user').insert([{ username: user, password: pass }])
-  if (error) alert('Gagal register: ' + error.message)
-  else {
-    alert('Registrasi berhasil, silakan login')
-    window.location.href = 'login.html'
-  }
-})
-</script>
+      const { data, error } = await supabase.from('user').insert([{ username: user, password: pass }])
+      if (error) alert('Gagal register: ' + error.message)
+      else {
+        alert('Registrasi berhasil, silakan login')
+        window.location.href = 'login.html'
+      }
+    })
+  </script>
 </body>
 </html>
