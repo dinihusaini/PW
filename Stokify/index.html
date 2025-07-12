@@ -1,1 +1,54 @@
-<!-- halaman index Stokify -->
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Stokify — Katalog Produk</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="profile-container">
+    <div class="header-bg"></div>
+
+    <div class="header-text">
+      <h1>Stokify</h1>
+      <p class="subtitle">Katalog Produk Online</p>
+      <p><a href="admin.html">Masuk sebagai Admin</a></p>
+    </div>
+
+    <div id="content"></div>
+  </div>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+    const supabase = createClient(
+      'https://tfvzsriecpzvrnzlvwww.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmdnpzcmllY3B6dnJuemx2d3d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk1NTc5NzMsImV4cCI6MjA2NTEzMzk3M30.z1OHvDg0kkgyzmaW_BIho4tTHCXfFXSSH-KjYrPosOg'
+    )
+
+    const content = document.getElementById('content')
+
+    async function loadProduk() {
+      const { data, error } = await supabase.from('produk').select('*').order('id')
+      if (error) {
+        content.innerHTML = `<p>Gagal memuat data: ${error.message}</p>`
+        return
+      }
+
+      let out = ''
+      data.forEach(row => {
+        out += `
+          <div class="content-card">
+            <h2>${row.judul}</h2>
+            <p>${row.isi}</p>
+          </div>
+        `
+      })
+      content.innerHTML = out
+    }
+
+    window.addEventListener('DOMContentLoaded', loadProduk)
+  </script>
+</body>
+</html>
