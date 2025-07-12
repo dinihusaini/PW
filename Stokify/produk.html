@@ -24,13 +24,13 @@
     const { data } = await supabase.from('produk').select('*').order('id');
     data.forEach(p => {
       list.innerHTML += `
-        <div class="produk-item">
-          <img src="${p.gambar}" />
-          <h3>${p.judul}</h3>
-          <p>${p.isi}</p>
-          <button onclick="beli(${p.id}, '${p.judul}', '${p.gambar}', ${p.harga})">Beli</button>
-        </div>
-      `;
+  <div class="product-card">
+    <img src="${p.gambar}" />
+    <h3>${p.judul}</h3>
+    <p>${p.isi}</p>
+    <button onclick="beli(...)">Beli</button>
+  </div>
+`;
     });
     window.beli = (id, judul, gambar, harga) => {
       localStorage.setItem('produk', JSON.stringify({ id, judul, gambar, harga }));
