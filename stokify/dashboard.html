@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Stokify</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="navbar">
+    <div class="container">
+      <h1>Stokify</h1>
+      <nav>
+        <a href="about.html">About Us</a>
+        <a href="produk.html">Katalog Produk</a>
+        <a href="#" onclick="logout()">Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="dashboard">
+    <div class="container">
+      <h2>Selamat datang, <span id="userDisplay"></span>!</h2>
+      <p>Silakan pilih menu di atas untuk melihat informasi tentang kami atau produk yang tersedia.</p>
+    </div>
+  </main>
+
+  <script>
+    const user = localStorage.getItem('user')
+    if (!user) window.location.href = 'login.html'
+    document.getElementById('userDisplay').textContent = user
+
+    function logout() {
+      localStorage.clear()
+      window.location.href = 'login.html'
+    }
+  </script>
+</body>
+</html>
