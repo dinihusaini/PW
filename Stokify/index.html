@@ -10,21 +10,34 @@
     <form id="login-form">
       <input type="email" id="email" placeholder="Email" required><br>
       <input type="password" id="password" placeholder="Password" required><br>
-      <button type="submit">Login</button>
+      <button type="submit">Masuk</button>
     </form>
-    <p>Belum punya akun? <a href="register.html">Register</a></p>
+    <p>Belum punya akun? <a href="register.html">Daftar di sini</a></p>
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-  <script src="supabase.js"></script>
-  <script>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+    const supabase = createClient(
+      'https://tfvzsriecpzvrnzlvwww.supabase.co',
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRmdnpzcmllY3B6dnJuemx2d3d3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk1NTc5NzMsImV4cCI6MjA2NTEzMzk3M30.z1OHvDg0kkgyzmaW_BIho4tTHCXfFXSSH-KjYrPosOg'
+    );
+
     document.getElementById('login-form').addEventListener('submit', async (e) => {
       e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: email.value,
-        password: password.value
+        email,
+        password
       });
-      if (error) return alert('Login gagal');
-      window.location.href = 'dashboard.html';
+
+      if (error) {
+        alert('Login gagal: ' + error.message);
+      } else {
+        window.location.href = 'dashboard.html';
+      }
     });
   </script>
 </body>
