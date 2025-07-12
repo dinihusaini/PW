@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Katalog Produk - Stokify</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body>
+  <header class="navbar">
+    <div class="container">
+      <h1>Stokify</h1>
+      <nav>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="about.html">About Us</a>
+        <a href="#" onclick="logout()">Logout</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="produk">
+    <div class="container">
+      <h2>Katalog Produk</h2>
+      <input type="text" id="search" placeholder="Cari produk..." />
+      <div id="produkList" class="produk-list"></div>
+      <button id="checkoutBtn">Lanjut ke Pembayaran</button>
+    </div>
+  </main>
+
+  <script type="module">
+    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+    const supabase = createClient('https://fjlcclekszijkddtmcss.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZqbGNjbGVrc3ppamtkZHRtY3NzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTIzMzU5MDUsImV4cCI6MjA2NzkxMTkwNX0.m-RASrLz0XDLC_lO-4mVTliEWbMV4gyIimEi30D1RLQ')
+
+    const produkList = document.getElementById('produkList')
+    const searchInput = document.getElementById('search')
+    const checkoutBtn = document.getElementById('checkoutBtn')
+    let keranjang = []
+
+    async function loadProduk() {
+      const { data, error } = await supabase.from('produk').select('*')
+      if (error) {
+        alert('Gagal memuat produk')
+        return
+      }
+      tampilkanProduk(data)
+    }
+
+    function tampilkanProduk(produk) {
+      produkList.innerHTML = ''
+      produk.forEach(p => {
+        const div = document.createElement('div')
+        div.className = 'produk-item'
+        div.innerHTML = `
+          <h3>${p.nama}</h3>
+          <p>${p.deskripsi}</p>
+          <p>Harga: Rp ${p.harga}</p>
+          <input type="number" min="1" value="0" id="qty-${p.id}" />
+        `
+        produkList.appendChild(div)
+      })
+    }
+
+    searchInput.addEventListener('input', async () => {
+      const keyword = searchInput.value.toLowerCase()
+      const { data } = await supabase.from('produk').select('*')
+      const hasil = data.filter(p => p.nama.toLowerCase().includes(keyword))
+      tampilkanProduk(hasil)
+    })
+
+    checkoutBtn.addEventListener('click', () => {
+      const inputs = document.querySelectorAll('input[type="number"]')
+      keranjang = []
+      inputs.forEach(input => {
+        const qty = parseInt(input.value)
+        if (qty > 0) {
+          const id = input.id.split('-')[1]
+          keranjang.push({ id: parseInt(id), qty })
+        }
+      })
+      if (keranjang.length === 0) {
+        alert('Keranjang kosong')
+      } else {
+        localStorage.setItem('keranjang', JSON.stringify(keranjang))
+        window.location.href = 'checkout.html'
+      }
+    })
+
+    const user = localStorage.getItem('user')
+    if (!user) window.location.href = 'login.html'
+
+    function logout() {
+      localStorage.clear()
+      window.location.href = 'login.html'
+    }
+
+    loadProduk()
+  </script>
+</body>
+</html>
