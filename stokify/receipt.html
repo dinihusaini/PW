@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Struk Pembelian - Stokify</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <main class="receipt">
+    <div class="container">
+      <h2>Struk Pembelian</h2>
+      <div id="receiptContent"></div>
+      <button onclick="window.print()">Cetak Struk (PDF)</button>
+    </div>
+  </main>
+
+  <script>
+    const detail = JSON.parse(localStorage.getItem('detailTransaksi')) || {}
+    const metode = localStorage.getItem('paymentMethod') || 'cash'
+    const receiptContent = document.getElementById('receiptContent')
+
+    let html = '<ul>'
+    let total = 0
+    for (const key in detail) {
+      const item = detail[key]
+      const subtotal = item.harga * item.qty
+      total += subtotal
+      html += `<li>${item.nama} x ${item.qty} = Rp ${subtotal}</li>`
+    }
+    html += `</ul><hr><p><strong>Total: Rp ${total}</strong></p>`
+    html += `<p>Metode Pembayaran: <strong>${metode.toUpperCase()}</strong></p>`
+
+    if (metode === 'qris') {
+      html += '<img src="assets/qris-example.png" alt="QRIS Code" width="200" />'
+    }
+
+    receiptContent.innerHTML = html
+  </script>
+</body>
+</html>
