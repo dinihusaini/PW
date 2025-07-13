@@ -44,19 +44,20 @@
     }
 
     function tampilkanProduk(produk) {
-      produkList.innerHTML = ''
-      produk.forEach(p => {
-        const div = document.createElement('div')
-        div.className = 'produk-item'
-        div.innerHTML = `
-          <h3>${p.nama}</h3>
-          <p>${p.deskripsi}</p>
-          <p>Harga: Rp ${p.harga}</p>
-          <input type="number" min="1" value="0" id="qty-${p.id}" />
-        `
-        produkList.appendChild(div)
-      })
-    }
+  produkList.innerHTML = ''
+  produk.forEach(p => {
+    const div = document.createElement('div')
+    div.className = 'produk-item'
+    div.innerHTML = `
+      <img src="${p.gambar_url}" alt="${p.nama}" />
+      <h3>${p.nama}</h3>
+      <p>${p.deskripsi}</p>
+      <p>Harga: Rp ${p.harga}</p>
+      <input type="number" min="1" value="0" id="qty-${p.id}" />
+    `
+    produkList.appendChild(div)
+  })
+}
 
     searchInput.addEventListener('input', async () => {
       const keyword = searchInput.value.toLowerCase()
