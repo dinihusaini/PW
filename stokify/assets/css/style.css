@@ -154,3 +154,20 @@ th, td {
     margin: 10px 0;
   }
 }
+
+
+.navbar {
+  background-color: #0a66c2;
+  padding: 16px;
+  text-align: center;
+  position: relative;
+  z-index: 10;
+}
+
+.navbar a {
+  color: #fff !important;
+  margin: 0 15px;
+  font-weight: bold;
+  z-index: 20;
+  position: relative;
+}
