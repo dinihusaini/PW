@@ -253,7 +253,7 @@ th, td {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-image: url('assets/bglogin.jpg'); /* ganti sesuai lokasi gambar */
+  background-image: url('bglogin.jpg'); /* ganti sesuai lokasi gambar */
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
