@@ -8,7 +8,7 @@
 body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   background-color: #f4f6f8;
-  color: #333;
+  color: #f3efe7;
   line-height: 1.6;
 }
 
@@ -28,7 +28,7 @@ h1, h2, h3 {
 }
 
 button {
-  background-color: #0a66c2;
+  background-color: #f3efe7;
   color: #333;
   padding: 10px 18px;
   border: none;
@@ -39,7 +39,7 @@ button {
 }
 
 button:hover {
-  background-color: #004d99;
+  background-color: #f3efe7;
 }
 
 input, textarea, select {
@@ -52,7 +52,7 @@ input, textarea, select {
 }
 
 a {
-  color: #0a66c2;
+  color: #f3efe7;
   text-decoration: none;
 }
 
@@ -77,7 +77,7 @@ a:hover {
 
 /* Dashboard */
 .navbar {
-  background-color: #0a66c2;
+  background-color: #f3efe7;
   padding: 16px;
   text-align: center;
 }
@@ -206,7 +206,7 @@ th, td {
 
 
 .navbar {
-  background-color: #0a66c2;
+  background-color: #f3efe7;
   padding: 16px;
   text-align: center;
   position: relative;
@@ -305,7 +305,7 @@ th, td {
 }
 
 .auth-container button {
-  background-color: #0a66c2;
+  background-color: #f3efe7;
   color: white;
   border: none;
   padding: 10px 20px;
