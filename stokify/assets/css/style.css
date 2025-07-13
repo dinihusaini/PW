@@ -162,12 +162,17 @@ th, td {
   text-align: center;
   position: relative;
   z-index: 10;
+  color: white;
 }
 
-.navbar a {
+.nav-links a {
   color: #fff !important;
   margin: 0 15px;
   font-weight: bold;
-  z-index: 20;
   position: relative;
+  z-index: 20;
+}
+
+.nav-links a:hover {
+  text-decoration: underline;
 }
