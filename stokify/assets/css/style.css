@@ -191,6 +191,34 @@ th, td {
   margin-top: 10px;
 }
 
+/* Section di Dashboard */
+.about-section,
+.vision-mission,
+.cta-section {
+  margin-top: 30px;
+  background-color: #fff;
+  padding: 20px 25px;
+  border-radius: 12px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.vision-mission ul {
+  padding-left: 20px;
+  list-style-type: disc;
+  margin-top: 10px;
+}
+
+.vision-mission li {
+  margin-bottom: 8px;
+}
+
+.cta-section {
+  background-color: #f0d8b4;
+  color: #333;
+  text-align: center;
+  font-weight: bold;
+}
+
 /* Responsive */
 @media (max-width: 600px) {
   .container {
