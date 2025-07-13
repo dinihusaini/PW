@@ -83,7 +83,7 @@ a:hover {
 }
 
 .navbar a {
-  color: #000;
+  color: #000 !important;
   margin: 0 15px;
   font-weight: bold;
 }
