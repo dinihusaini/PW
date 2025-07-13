@@ -34,6 +34,20 @@
     const checkoutBtn = document.getElementById('checkoutBtn')
     let keranjang = []
 
+    let jumlahProduk = {}
+
+function tambah(id) {
+  if (!jumlahProduk[id]) jumlahProduk[id] = 0
+  jumlahProduk[id]++
+  document.getElementById(`qty-${id}`).innerText = jumlahProduk[id]
+}
+
+function kurang(id) {
+  if (!jumlahProduk[id]) jumlahProduk[id] = 0
+  if (jumlahProduk[id] > 0) jumlahProduk[id]--
+  document.getElementById(`qty-${id}`).innerText = jumlahProduk[id]
+}
+
     async function loadProduk() {
       const { data, error } = await supabase.from('produk').select('*')
       if (error) {
@@ -52,8 +66,12 @@
       <img src="${p.gambar_url}" alt="${p.nama}" />
       <h3>${p.nama}</h3>
       <p>${p.deskripsi}</p>
-      <p>Harga: Rp ${p.harga}</p>
-      <input type="number" min="1" value="0" id="qty-${p.id}" />
+      <p class="price">Rp ${p.harga}</p>
+      <div class="counter">
+        <button onclick="kurang(${p.id})">-</button>
+        <div class="qty-display" id="qty-${p.id}">0</div>
+        <button onclick="tambah(${p.id})">+</button>
+      </div>
     `
     produkList.appendChild(div)
   })
@@ -67,22 +85,20 @@
     })
 
     checkoutBtn.addEventListener('click', () => {
-      const inputs = document.querySelectorAll('input[type="number"]')
-      keranjang = []
-      inputs.forEach(input => {
-        const qty = parseInt(input.value)
-        if (qty > 0) {
-          const id = input.id.split('-')[1]
-          keranjang.push({ id: parseInt(id), qty })
-        }
-      })
-      if (keranjang.length === 0) {
-        alert('Keranjang kosong')
-      } else {
-        localStorage.setItem('keranjang', JSON.stringify(keranjang))
-        window.location.href = 'checkout.html'
-      }
-    })
+  keranjang = []
+  for (const id in jumlahProduk) {
+    const qty = jumlahProduk[id]
+    if (qty > 0) {
+      keranjang.push({ id: parseInt(id), qty })
+    }
+  }
+  if (keranjang.length === 0) {
+    alert('Keranjang kosong')
+  } else {
+    localStorage.setItem('keranjang', JSON.stringify(keranjang))
+    window.location.href = 'checkout.html'
+  }
+})
 
     const user = localStorage.getItem('user')
     if (!user) window.location.href = 'login.html'
