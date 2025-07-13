@@ -95,24 +95,73 @@ a:hover {
 /* Produk / Katalog */
 .produk-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
   gap: 20px;
   margin-top: 20px;
 }
 
 .produk-item {
-  background: #f9f9f9;
-  border-radius: 10px;
-  padding: 16px;
-  box-shadow: 0 0 5px rgba(0,0,0,0.05);
+  background: #fff;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.produk-item:hover {
+  transform: translateY(-4px);
 }
 
 .produk-item img {
-  max-width: 100%;
-  height: 150px;
+  width: 100%;
+  height: 200px;
   object-fit: cover;
-  border-radius: 6px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.produk-item h3 {
+  margin: 10px 0 5px;
+  font-size: 18px;
+  color: #333;
+}
+
+.produk-item p {
+  font-size: 14px;
+  color: #555;
+}
+
+.price {
+  margin-top: 5px;
+  color: #555;
+  font-weight: bold;
+}
+
+.counter {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+}
+
+.counter button {
+  width: 30px;
+  height: 30px;
+  font-size: 18px;
+  border: none;
+  background-color: #222;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.qty-display {
+  min-width: 30px;
+  text-align: center;
+  font-weight: bold;
 }
 
 .qty-input {
@@ -179,9 +228,9 @@ th, td {
 
 .produk-item img {
   width: 100%;
-  height: 150px;
+  height: 200px; /* disesuaikan biar tampak seperti buku */
   object-fit: cover;
-  border-radius: 6px;
+  border-radius: 10px;
   margin-bottom: 10px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
